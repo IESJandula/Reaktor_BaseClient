@@ -15,9 +15,9 @@ import org.springframework.stereotype.Service;
 
 import es.iesjandula.reaktor.base.security.service.PublicKeyGetter;
 import es.iesjandula.reaktor.base.utils.BaseException;
+import es.iesjandula.reaktor.base.utils.HttpClientUtils;
 import es.iesjandula.reaktor.base_client.utils.BaseClientConstants;
 import es.iesjandula.reaktor.base_client.utils.BaseClientException;
-import es.iesjandula.reaktor.base_client.utils.HttpClientUtils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
