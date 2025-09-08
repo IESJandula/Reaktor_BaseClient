@@ -22,15 +22,20 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Francisco Manuel Benítez Chico
  */
-@Slf4j
 @Service
 public class AuthorizationService
 {
+    /**
+     * Logger of the class
+     */
+    private static final Logger log = LoggerFactory.getLogger(AuthorizationService.class);
+
 	@Value("${reaktor.firebase_server_url}")
 	private String firebaseServerUrl ;
 	
