@@ -2,17 +2,22 @@ package es.iesjandula.reaktor.base_client.requests;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import es.iesjandula.reaktor.base.utils.HttpClientUtils;
+import es.iesjandula.reaktor.base_client.dtos.NotificationEmailDto;
 import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
 import es.iesjandula.reaktor.base_client.utils.BaseClientConstants;
 import es.iesjandula.reaktor.base_client.utils.BaseClientException;
@@ -31,17 +36,90 @@ public class NotificationEmailSender
 	@Value("${reaktor.http_connection_timeout}")
 	private int httpConnectionTimeout ;	
 
-	
-
 	/**
-	 * Método - Enviar email
-	 * @param email - Email del destinatario
-	 * @param subject - Asunto del email
-	 * @param body      - Cuerpo del email
+	 * Método - Enviar notificación email
+	 * @param notificationEmailDto - DTO de la notificación email
 	 * @throws BaseClientException con un error al enviar el email
 	 */
-	public void send(String email, String subject, String body) throws BaseClientException
+	public void enviarNotificacionEmail(NotificationEmailDto notificationEmailDto) throws BaseClientException
 	{	
+		// Validamos los parámetros
+		this.validarParametros(notificationEmailDto);
+
+		// Enviamos la notificación email
+		this.enviarNotificacionEmailInternal(notificationEmailDto);
+	}
+
+	/**
+	 * Método - Validar parámetros
+	 * @param notificationEmailDto - DTO de la notificación email
+	 * @throws BaseClientException con un error al validar los parámetros
+	 */
+	private void validarParametros(NotificationEmailDto notificationEmailDto) throws BaseClientException
+	{
+		// Validamos si la instancia no es nula
+		if (notificationEmailDto == null)
+		{
+			String errorMessage = "La notificación email es obligatoria";
+
+			log.error(errorMessage) ;
+			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "La notificación email es obligatoria", null);
+		}
+
+		// Validamos los destinatarios
+		if (notificationEmailDto.getTo() == null || notificationEmailDto.getTo().isEmpty())
+		{
+			String errorMessage = "Los destinatarios son obligatorios";
+
+			log.error(errorMessage) ;
+			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "Los destinatarios son obligatorios", null);
+		}
+		
+		// Validamos si los destinatarios en copia son válidos
+		if (notificationEmailDto.getCc() == null || notificationEmailDto.getCc().isEmpty())
+		{
+			String errorMessage = "Los destinatarios en copia son obligatorios";
+
+			log.error(errorMessage) ;
+			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "Los destinatarios en copia son obligatorios", null);
+		}
+
+		// Validamos si los destinatarios en copia oculta son válidos
+		if (notificationEmailDto.getBcc() == null || notificationEmailDto.getBcc().isEmpty())
+		{
+			String errorMessage = "Los destinatarios en copia oculta son obligatorios";
+
+			log.error(errorMessage) ;
+			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "Los destinatarios en copia oculta son obligatorios", null);
+		}
+
+		// Validamos el asunto
+		if (notificationEmailDto.getSubject() == null || notificationEmailDto.getSubject().isEmpty())
+		{
+			String errorMessage = "El asunto es obligatorio";
+
+			log.error(errorMessage) ;
+			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "El asunto es obligatorio", null);
+		}
+
+		// Validamos el cuerpo
+		if (notificationEmailDto.getBody() == null || notificationEmailDto.getBody().isEmpty())
+		{
+			String errorMessage = "El cuerpo es obligatorio";
+
+			log.error(errorMessage) ;
+			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "El cuerpo es obligatorio", null);
+		}	
+	}
+
+	/**
+	 * Método - Enviar notificación email interno
+	 * @param notificationEmailDto - DTO de la notificación email
+	 * @throws BaseClientException con un error al enviar la notificación email
+	 */
+	private void enviarNotificacionEmailInternal(NotificationEmailDto notificationEmailDto) throws BaseClientException
+	{
+		// Creamos el HttpClient con timeout
 		CloseableHttpClient closeableHttpClient = null ;
 		CloseableHttpResponse closeableHttpResponse = null ;
 
@@ -58,6 +136,21 @@ public class NotificationEmailSender
 			
 			// Añadimos el token a la llamada
 			httpPost.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
+
+			// Indicamos que viaja un JSON
+			httpPost.setHeader("Content-type", "application/json") ;
+
+			// Nos aseguramos de que el ObjectMapper esté correctamente configurado
+			ObjectMapper objectMapper = new ObjectMapper() ;
+			
+			// Nos aseguramos de que se registren automáticamente cualquier módulo de Jackson necesario
+			objectMapper.findAndRegisterModules(); 
+	
+			// Serializamos el DTO de la notificación email a JSON asegurando UTF-8
+			StringEntity entity = new StringEntity(objectMapper.writeValueAsString(notificationEmailDto), StandardCharsets.UTF_8) ;
+			
+			// Añadimos el body de la notificación email a la petición
+			httpPost.setEntity(entity) ;
 			
 			log.debug("SEND_EMAIL - POST - Envío - Enviar email") ;
 	
@@ -79,21 +172,21 @@ public class NotificationEmailSender
 		}
 		catch (SocketTimeoutException socketTimeoutException)
 		{
-			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (info impresoras)";
+			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (notificaciones email)";
 			
 			log.error(errorMessage, socketTimeoutException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, socketTimeoutException) ;
         }
 		catch (ConnectTimeoutException connectTimeoutException)
 		{
-			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (info impresoras)";
+			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (notificaciones email)";
 
 			log.error(errorMessage, connectTimeoutException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, connectTimeoutException) ;
         }
 		catch (IOException ioException)
 		{	
-			String errorMessage = "IOException mientras se enviaba la petición POST con el email";
+			String errorMessage = "IOException mientras se enviaba la petición POST con la notificación email";
 
 			log.error(errorMessage, ioException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
