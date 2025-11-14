@@ -17,4 +17,7 @@ public class BaseClientConstants
 	
 	/** Error - Error mientras se obtenía el token personalizado JWT */
 	public static final int ERR_GETTING_PERSONALIZED_TOKEN_JWT  = 3 ;
+
+	/** Error - Error al enviar el email */
+	public static final int ERR_SENDING_EMAIL 				    = 4 ;
 }
