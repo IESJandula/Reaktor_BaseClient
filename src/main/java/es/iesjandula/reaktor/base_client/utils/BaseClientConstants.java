@@ -38,16 +38,16 @@ public class BaseClientConstants
 	public static final String PARAM_TEXTO_NOTIFICACION 			= "texto" ;
 
 	/** Parámetro - Fecha de inicio de la notificación */
-	public static final String PARAM_FECHA_INICIO_NOTIFICACION 	    = "fecha_inicio" ;
+	public static final String PARAM_FECHA_INICIO_NOTIFICACION 	    = "fechaInicio" ;
 
 	/** Parámetro - Hora de inicio de la notificación */
-	public static final String PARAM_HORA_INICIO_NOTIFICACION 	    = "hora_inicio" ;
+	public static final String PARAM_HORA_INICIO_NOTIFICACION 	    = "horaInicio" ;
 
 	/** Parámetro - Fecha de fin de la notificación */
-	public static final String PARAM_FECHA_FIN_NOTIFICACION 	    = "fecha_fin" ;
+	public static final String PARAM_FECHA_FIN_NOTIFICACION 	    = "fechaFin" ;
 
 	/** Parámetro - Hora de fin de la notificación */
-	public static final String PARAM_HORA_FIN_NOTIFICACION 	        = "hora_fin" ;
+	public static final String PARAM_HORA_FIN_NOTIFICACION 	        = "horaFin" ;
 
 	/** Parámetro - Receptor de la notificación */
 	public static final String PARAM_RECEPTOR_NOTIFICACION 	        = "receptor" ;

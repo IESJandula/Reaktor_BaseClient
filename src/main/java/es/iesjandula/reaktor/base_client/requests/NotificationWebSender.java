@@ -165,8 +165,10 @@ public class NotificationWebSender
 			// Enviamos la petición
 			closeableHttpResponse = closeableHttpClient.execute(httpPost) ;
 
-			// Comprobamos si la respuesta es OK
-			if (closeableHttpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+			// Verificamos el estado de la respuesta HTTP
+			int statusCode = closeableHttpResponse.getStatusLine().getStatusCode() ;
+			
+			if (statusCode != 200)
 			{
 				String errorMessage = "Error al enviar la notificación web. " + 
 									  "Código de error: " + closeableHttpResponse.getStatusLine().getStatusCode() + ". " +
