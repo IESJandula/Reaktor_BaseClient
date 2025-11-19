@@ -33,7 +33,7 @@ public class RequestFirebaseObtenerUsuarios
 	@Autowired
 	private AuthorizationService authorizationService ; 
 
-    @Value("${reaktor.firebase_url}")
+    @Value("${reaktor.firebase_server_url}")
     private String firebaseUrl;
 
     @Value("${reaktor.http_connection_timeout}")
