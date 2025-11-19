@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor.base_client.requests;
+package es.iesjandula.reaktor.base_client.requests.notificationes;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -7,7 +7,6 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class NotificationWebSender
+public class RequestNotificacionesEnviarWeb
 {
 	@Autowired
 	private AuthorizationService authorizationService ;
@@ -143,7 +142,7 @@ public class NotificationWebSender
 			closeableHttpClient = HttpClientUtils.crearHttpClientConTimeout(this.httpConnectionTimeout) ;
 
 			// Logueamos
-			log.debug("SEND_WEB - POST - Inicio Método - Enviar web") ;
+			log.debug("Comienzo del envío de notificación web") ;
 			
 			// Configuración del HTTP POST con codificación UTF-8
 			HttpPost httpPost = new HttpPost(this.notificationsServerUrl + "/notifications/web/apps") ;
@@ -159,11 +158,12 @@ public class NotificationWebSender
 			
 			// Añadimos el token a la llamada
 			httpPost.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
-			
-			log.debug("SEND_WEB - POST - Envío - Enviar web") ;
-	
+				
 			// Enviamos la petición
 			closeableHttpResponse = closeableHttpClient.execute(httpPost) ;
+
+			// Logueamos
+			log.debug("Fin del envío de notificación web") ;
 
 			// Verificamos el estado de la respuesta HTTP
 			int statusCode = closeableHttpResponse.getStatusLine().getStatusCode() ;
@@ -178,7 +178,7 @@ public class NotificationWebSender
 				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, null);
 			}
 			
-			log.info("SEND_WEB - FIN - Enviar web") ;
+			log.info("Notificación web enviada correctamente") ;
 		}
 		catch (SocketTimeoutException socketTimeoutException)
 		{

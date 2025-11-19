@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor.base_client.requests;
+package es.iesjandula.reaktor.base_client.requests.notificationes;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class NotificationEmailSender
+public class RequestNotificacionesEnviarEmail
 {
 	@Autowired
 	private AuthorizationService authorizationService ;
@@ -129,7 +129,7 @@ public class NotificationEmailSender
 			closeableHttpClient = HttpClientUtils.crearHttpClientConTimeout(this.httpConnectionTimeout) ;
 
 			// Logueamos
-			log.debug("SEND_EMAIL - POST - Inicio Método - Enviar email") ;
+			log.debug("Comienzo del envío de notificación por email") ;
 			
 			// Configuración del HTTP POST con codificación UTF-8
 			HttpPost httpPost = new HttpPost(this.notificationsServerUrl + "/notifications/email") ;
@@ -152,10 +152,11 @@ public class NotificationEmailSender
 			// Añadimos el body de la notificación email a la petición
 			httpPost.setEntity(entity) ;
 			
-			log.debug("SEND_EMAIL - POST - Envío - Enviar email") ;
-	
 			// Enviamos la petición
 			closeableHttpResponse = closeableHttpClient.execute(httpPost) ;
+			
+			// Logueamos
+			log.debug("Fin del envío de notificación por email") ;
 
 			// Comprobamos si la respuesta es OK
 			if (closeableHttpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
@@ -168,25 +169,25 @@ public class NotificationEmailSender
 				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, null);
 			}
 			
-			log.info("SEND_EMAIL - FIN - Enviar email") ;
+			log.info("Notificación por email enviada correctamente") ;
 		}
 		catch (SocketTimeoutException socketTimeoutException)
 		{
-			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (notificaciones email)";
+			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (notificaciones por email)";
 			
 			log.error(errorMessage, socketTimeoutException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, socketTimeoutException) ;
         }
 		catch (ConnectTimeoutException connectTimeoutException)
 		{
-			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (notificaciones email)";
+			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (notificaciones por email)";
 
 			log.error(errorMessage, connectTimeoutException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, connectTimeoutException) ;
         }
 		catch (IOException ioException)
 		{	
-			String errorMessage = "IOException mientras se enviaba la petición POST con la notificación email";
+			String errorMessage = "IOException mientras se enviaba la petición POST con la notificación por email";
 
 			log.error(errorMessage, ioException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
@@ -202,7 +203,7 @@ public class NotificationEmailSender
 			}
 			catch (IOException ioException)
 			{
-				String errorMessage = "IOException en closeableHttpResponse mientras se cerraba el flujo de datos";
+				String errorMessage = "IOException en closeableHttpResponse mientras se cerraba el flujo de datos (notificaciones por email)";
 
 				log.error(errorMessage, ioException) ;
 				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
@@ -217,7 +218,7 @@ public class NotificationEmailSender
 			}
 			catch (IOException ioException)
 			{
-				String errorMessage = "IOException en closeableHttpClient mientras se cerraba el flujo de datos";
+				String errorMessage = "IOException en closeableHttpClient mientras se cerraba el flujo de datos (notificaciones por email)";
 				
 				log.error(errorMessage, ioException) ;
 				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;

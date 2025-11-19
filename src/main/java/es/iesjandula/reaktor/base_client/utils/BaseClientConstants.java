@@ -30,6 +30,9 @@ public class BaseClientConstants
 	/** Error - Error al enviar la notificación email */
 	public static final int ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL = 4 ;
 
+	/** Error - Error al obtener los usuarios de Firebase */
+	public static final int ERR_GETTING_USERS 				         = 5 ;
+
 	/*********************************************************/
 	/****** Parámetros para envío de notificaciones **********/
 	/*********************************************************/
