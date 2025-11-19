@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor.base_client.requests.notificationes;
+package es.iesjandula.reaktor.base_client.requests.notificaciones;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
