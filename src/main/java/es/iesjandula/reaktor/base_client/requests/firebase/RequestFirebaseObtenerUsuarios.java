@@ -57,7 +57,7 @@ public class RequestFirebaseObtenerUsuarios
 			log.debug("Comienzo de la obtención de usuarios de Firebase") ;
 			
 			// Configuración del HTTP POST con codificación UTF-8
-			HttpPost httpPost = new HttpPost(this.firebaseUrl + "/firebase/users") ;
+			HttpPost httpPost = new HttpPost(this.firebaseUrl + "/firebase/queries/users") ;
 			
 			// Añadimos el token a la llamada
 			httpPost.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
