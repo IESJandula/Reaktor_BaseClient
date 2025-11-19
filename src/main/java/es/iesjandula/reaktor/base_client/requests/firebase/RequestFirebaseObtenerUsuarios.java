@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
@@ -56,14 +56,14 @@ public class RequestFirebaseObtenerUsuarios
 			// Logueamos
 			log.debug("Comienzo de la obtención de usuarios de Firebase") ;
 			
-			// Configuración del HTTP POST con codificación UTF-8
-			HttpPost httpPost = new HttpPost(this.firebaseUrl + "/firebase/queries/users") ;
+			// Configuración del HTTP GET con codificación UTF-8
+			HttpGet httpGet = new HttpGet(this.firebaseUrl + "/firebase/queries/users") ;
 			
 			// Añadimos el token a la llamada
-			httpPost.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
+			httpGet.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
 
 			// Enviamos la petición
-			closeableHttpResponse = closeableHttpClient.execute(httpPost) ;
+			closeableHttpResponse = closeableHttpClient.execute(httpGet) ;
 
 			// Logueamos
 			log.debug("Fin de la obtención de usuarios de Firebase") ;
