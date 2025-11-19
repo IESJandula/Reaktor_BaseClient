@@ -74,24 +74,6 @@ public class RequestNotificacionesEnviarEmail
 			log.error(errorMessage) ;
 			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "Los destinatarios son obligatorios", null);
 		}
-		
-		// Validamos si los destinatarios en copia son válidos
-		if (notificationEmailDto.getCc() == null || notificationEmailDto.getCc().isEmpty())
-		{
-			String errorMessage = "Los destinatarios en copia son obligatorios";
-
-			log.error(errorMessage) ;
-			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "Los destinatarios en copia son obligatorios", null);
-		}
-
-		// Validamos si los destinatarios en copia oculta son válidos
-		if (notificationEmailDto.getBcc() == null || notificationEmailDto.getBcc().isEmpty())
-		{
-			String errorMessage = "Los destinatarios en copia oculta son obligatorios";
-
-			log.error(errorMessage) ;
-			throw new BaseClientException(BaseClientConstants.ERR_INVALID_PARAMETER_NOTIFICATION_EMAIL, "Los destinatarios en copia oculta son obligatorios", null);
-		}
 
 		// Validamos el asunto
 		if (notificationEmailDto.getSubject() == null || notificationEmailDto.getSubject().isEmpty())
