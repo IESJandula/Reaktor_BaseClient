@@ -7,6 +7,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,12 +18,15 @@ import es.iesjandula.reaktor.base_client.dtos.NotificationWebDto;
 import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
 import es.iesjandula.reaktor.base_client.utils.BaseClientConstants;
 import es.iesjandula.reaktor.base_client.utils.BaseClientException;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Component
 public class RequestNotificacionesEnviarWeb
 {
+	/**
+	 * Logger of the class
+	 */
+	private static final Logger log = LoggerFactory.getLogger(RequestNotificacionesEnviarWeb.class);
+
 	@Autowired
 	private AuthorizationService authorizationService ;
 

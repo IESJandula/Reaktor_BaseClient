@@ -24,12 +24,17 @@ import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
 import es.iesjandula.reaktor.base_client.utils.BaseClientException;
 import es.iesjandula.reaktor.base_client.utils.BaseClientConstants;
 
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 @Component
 public class RequestFirebaseObtenerUsuarios
 {
+	/**
+	 * Logger of the class
+	 */
+	private static final Logger log = LoggerFactory.getLogger(RequestFirebaseObtenerUsuarios.class);
+
 	@Autowired
 	private AuthorizationService authorizationService ; 
 
