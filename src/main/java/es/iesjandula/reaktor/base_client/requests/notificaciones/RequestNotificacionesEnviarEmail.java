@@ -114,7 +114,7 @@ public class RequestNotificacionesEnviarEmail
 			log.debug("Comienzo del envío de notificación por email") ;
 			
 			// Configuración del HTTP POST con codificación UTF-8
-			HttpPost httpPost = new HttpPost(this.notificationsServerUrl + "/notifications/email") ;
+			HttpPost httpPost = new HttpPost(this.notificationsServerUrl + "/notifications/email/") ;
 			
 			// Añadimos el token a la llamada
 			httpPost.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
