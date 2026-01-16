@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.SocketTimeoutException;
 
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,15 +41,16 @@ public class RequestNotificacionesEnviarWeb
 	/**
 	 * Método - Enviar notificación web
 	 * @param notificationWebDto - DTO de la notificación web
+	 * @return Integer identificador de la notificación web
 	 * @throws BaseClientException con un error al enviar la notificación web
 	 */
-	public void enviarNotificacionWeb(NotificationWebDto notificationWebDto) throws BaseClientException
+	public Integer enviarNotificacionWeb(NotificationWebDto notificationWebDto) throws BaseClientException
 	{
 		// Validamos los parámetros
 		this.validarParametros(notificationWebDto);
 		
-		// Enviamos la notificación web
-		this.enviarNotificacionWebInternal(notificationWebDto);
+		// Enviamos la notificación web y devolvemos el identificador de la notificación web
+		return this.enviarNotificacionWebInternal(notificationWebDto);
 	}
 
 	/**
@@ -133,9 +136,10 @@ public class RequestNotificacionesEnviarWeb
 	/**
 	 * Método - Enviar notificación web interno
 	 * @param notificationWebDto - DTO de la notificación web
+	 * @return Integer identificador de la notificación web
 	 * @throws BaseClientException con un error al enviar la notificación web
 	 */
-	private void enviarNotificacionWebInternal(NotificationWebDto notificationWebDto) throws BaseClientException
+	private Integer enviarNotificacionWebInternal(NotificationWebDto notificationWebDto) throws BaseClientException
 	{
 		// Creamos el HttpClient con timeout
 		CloseableHttpClient closeableHttpClient = null ;
@@ -182,26 +186,33 @@ public class RequestNotificacionesEnviarWeb
 				log.error(errorMessage) ;
 				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, null);
 			}
+
+			// Obtenemos el identificador de la notificación web
+			Integer idNotificacion = Integer.valueOf(EntityUtils.toString(closeableHttpResponse.getEntity()));
 			
-			log.info("Notificación web enviada correctamente") ;
+			// Logueamos
+			log.info("Notificación web enviada correctamente con identificador: " + idNotificacion) ;
+
+			// Devolvemos el identificador de la notificación web
+			return idNotificacion;
 		}
 		catch (SocketTimeoutException socketTimeoutException)
 		{
-			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (notificaciones web)";
+			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (creación de notificación web)";
 			
 			log.error(errorMessage, socketTimeoutException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, socketTimeoutException) ;
         }
 		catch (ConnectTimeoutException connectTimeoutException)
 		{
-			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (notificaciones web)";
+			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (creación de notificación web)";
 
 			log.error(errorMessage, connectTimeoutException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, connectTimeoutException) ;
         }
 		catch (IOException ioException)
 		{	
-			String errorMessage = "IOException mientras se enviaba la petición POST con la notificación web";
+			String errorMessage = "IOException mientras se enviaba la petición POST con la notificación web (creación de notificación web)";
 
 			log.error(errorMessage, ioException) ;
 			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
@@ -217,7 +228,7 @@ public class RequestNotificacionesEnviarWeb
 			}
 			catch (IOException ioException)
 			{
-				String errorMessage = "IOException en closeableHttpResponse mientras se cerraba el flujo de datos";
+				String errorMessage = "IOException en closeableHttpResponse mientras se cerraba el flujo de datos (creación de notificación web)";
 
 				log.error(errorMessage, ioException) ;
 				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
@@ -232,7 +243,99 @@ public class RequestNotificacionesEnviarWeb
 			}
 			catch (IOException ioException)
 			{
-				String errorMessage = "IOException en closeableHttpClient mientras se cerraba el flujo de datos";
+				String errorMessage = "IOException en closeableHttpClient mientras se cerraba el flujo de datos (creación de notificación web)";
+				
+				log.error(errorMessage, ioException) ;
+				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
+			}
+		}
+	}
+
+	/**
+	 * Método - Eliminar notificación web
+	 * @param idNotificacion - Identificador de la notificación web
+	 * @throws BaseClientException con un error al eliminar la notificación web
+	 */
+	public void eliminarNotificacionWeb(Integer idNotificacion) throws BaseClientException
+	{
+		// Creamos el HttpClient con timeout
+		CloseableHttpClient closeableHttpClient = null ;
+		CloseableHttpResponse closeableHttpResponse = null ;
+
+		try
+		{
+			// Creamos el HttpClient con timeout
+			closeableHttpClient = HttpClientUtils.crearHttpClientConTimeout(this.httpConnectionTimeout) ;
+
+			// Configuración del HTTP DELETE con codificación UTF-8
+			HttpDelete httpDelete = new HttpDelete(this.notificationsServerUrl + "/notifications/web/apps/" + idNotificacion) ;
+
+			// Añadimos el token a la llamada
+			httpDelete.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
+
+			// Enviamos la petición
+			closeableHttpResponse = closeableHttpClient.execute(httpDelete) ;
+
+			// Logueamos
+			log.debug("Fin de la eliminación de notificación web") ;
+
+			// Verificamos el estado de la respuesta HTTP
+			int statusCode = closeableHttpResponse.getStatusLine().getStatusCode() ;
+			
+			if (statusCode != 200)
+			{
+				String errorMessage = "Error al eliminar la notificación web. " + 
+									  "Código de error: " + closeableHttpResponse.getStatusLine().getStatusCode() + ". " +
+									  "Motivo de error: " + closeableHttpResponse.getStatusLine().getReasonPhrase();
+				
+				log.error(errorMessage) ;
+				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, null);
+			}
+
+			// Logueamos
+			log.info("Notificación web eliminada correctamente con identificador: " + idNotificacion) ;
+		}
+		catch (SocketTimeoutException socketTimeoutException)
+		{
+			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (eliminación de notificación web)";
+			
+			log.error(errorMessage, socketTimeoutException) ;
+			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, socketTimeoutException) ;
+		}
+		catch (IOException ioException)
+		{
+			String errorMessage = "IOException mientras se enviaba la petición DELETE con la notificación web (eliminación de notificación web)";
+			
+			log.error(errorMessage, ioException) ;
+			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
+		}
+		finally
+		{
+			try
+			{
+				if (closeableHttpResponse != null)
+				{
+					closeableHttpResponse.close() ;
+				}
+			}
+			catch (IOException ioException)
+			{
+				String errorMessage = "IOException en closeableHttpResponse mientras se cerraba el flujo de datos (eliminación de notificación web)";
+				
+				log.error(errorMessage, ioException) ;
+				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
+			}
+
+			try
+			{
+				if (closeableHttpClient != null)
+				{
+					closeableHttpClient.close() ;
+				}
+			}
+			catch (IOException ioException)
+			{
+				String errorMessage = "IOException en closeableHttpClient mientras se cerraba el flujo de datos (eliminación de notificación web)";
 				
 				log.error(errorMessage, ioException) ;
 				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
