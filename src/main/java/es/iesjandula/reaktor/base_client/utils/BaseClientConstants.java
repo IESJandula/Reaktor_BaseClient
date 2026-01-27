@@ -33,6 +33,9 @@ public class BaseClientConstants
 	/** Error - Error al obtener los usuarios de Firebase */
 	public static final int ERR_GETTING_USERS 				         = 5 ;
 
+	/** Error - Error al imprimir el PDF */
+	public static final int ERR_PRINTING_PDF 				         = 6 ;
+
 	/*********************************************************/
 	/****** Parámetros para envío de notificaciones **********/
 	/*********************************************************/
