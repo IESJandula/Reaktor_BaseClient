@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import es.iesjandula.reaktor.base.utils.BaseException;
 import es.iesjandula.reaktor.base.utils.HttpClientUtils;
 import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
 import es.iesjandula.reaktor.base_client.utils.BaseClientConstants;
@@ -42,9 +43,10 @@ public class RequestImpresion
 	 * Método - Imprimir PDF
 	 * @param pdf - PDF a imprimir
 	 * @return Integer identificador de la impresión
+	 * @throws BaseException error al obtener el token personalizado
 	 * @throws BaseClientException con un error al imprimir el PDF
 	 */
-	public void imprimirPdf(byte[] pdf) throws BaseClientException
+	public void imprimirPdf(byte[] pdf) throws BaseException, BaseClientException
 	{
 		// Validamos los parámetros
 		this.validarParametros(pdf);
@@ -73,9 +75,10 @@ public class RequestImpresion
 	/**
 	 * Método - Imprimir PDF interno
 	 * @param pdf - PDF a imprimir
+	 * @throws BaseException error al obtener el token personalizado
 	 * @throws BaseClientException con un error al imprimir el PDF
 	 */
-	private void imprimirPdfInternal(byte[] pdf) throws BaseClientException
+	private void imprimirPdfInternal(byte[] pdf) throws BaseException, BaseClientException
 	{
 		// Creamos el HttpClient con timeout
 		CloseableHttpClient closeableHttpClient = null ;
@@ -92,15 +95,13 @@ public class RequestImpresion
 			// Configuración del HTTP POST con codificación UTF-8
 			HttpPost httpPost = new HttpPost(this.printersServerUrl + "/printers/web/print/app") ;
 
-            // Añadimos el content-type
-            httpPost.addHeader("Content-Type", "application/pdf");
-
             // Creamos el multipart
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 
             // Añadimos el fichero
-            builder.addBinaryBody("file", pdf, ContentType.APPLICATION_OCTET_STREAM, "documento.pdf") ;
+            // Importante: NO forzar manualmente el Content-Type en la cabecera, para que HttpClient añada el boundary.
+            builder.addBinaryBody("file", pdf, ContentType.create("application/pdf"), "documento.pdf") ;
 
             // Añadimos el multipart a la petición
             httpPost.setEntity(builder.build()) ;
@@ -129,24 +130,24 @@ public class RequestImpresion
 		}
 		catch (SocketTimeoutException socketTimeoutException)
 		{
-			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (creación de notificación web)";
+			String errorMessage = "SocketTimeoutException de lectura o escritura al comunicarse con el servidor (impresión del PDF)";
 			
 			log.error(errorMessage, socketTimeoutException) ;
-			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, socketTimeoutException) ;
+			throw new BaseClientException(BaseClientConstants.ERR_PRINTING_PDF, errorMessage, socketTimeoutException) ;
         }
 		catch (ConnectTimeoutException connectTimeoutException)
 		{
-			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (creación de notificación web)";
+			String errorMessage = "ConnectTimeoutException al intentar conectar con el servidor (impresión del PDF)";
 
 			log.error(errorMessage, connectTimeoutException) ;
-			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, connectTimeoutException) ;
+			throw new BaseClientException(BaseClientConstants.ERR_PRINTING_PDF, errorMessage, connectTimeoutException) ;
         }
 		catch (IOException ioException)
 		{	
-			String errorMessage = "IOException mientras se enviaba la petición POST con la notificación web (creación de notificación web)";
+			String errorMessage = "IOException mientras se enviaba la petición POST con la impresión del PDF)";
 
 			log.error(errorMessage, ioException) ;
-			throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
+			throw new BaseClientException(BaseClientConstants.ERR_PRINTING_PDF, errorMessage, ioException) ;
 		}
 		finally
 		{
@@ -159,10 +160,10 @@ public class RequestImpresion
 			}
 			catch (IOException ioException)
 			{
-				String errorMessage = "IOException en closeableHttpResponse mientras se cerraba el flujo de datos (creación de notificación web)";
+				String errorMessage = "IOException en closeableHttpResponse mientras se cerraba el flujo de datos (impresión del PDF)";
 
 				log.error(errorMessage, ioException) ;
-				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
+				throw new BaseClientException(BaseClientConstants.ERR_PRINTING_PDF, errorMessage, ioException) ;
 			}
 
 			try
@@ -174,10 +175,10 @@ public class RequestImpresion
 			}
 			catch (IOException ioException)
 			{
-				String errorMessage = "IOException en closeableHttpClient mientras se cerraba el flujo de datos (creación de notificación web)";
+				String errorMessage = "IOException en closeableHttpClient mientras se cerraba el flujo de datos (impresión del PDF)";
 				
 				log.error(errorMessage, ioException) ;
-				throw new BaseClientException(BaseClientConstants.ERR_SENDING_EMAIL, errorMessage, ioException) ;
+				throw new BaseClientException(BaseClientConstants.ERR_PRINTING_PDF, errorMessage, ioException) ;
 			}
 		}
 	}

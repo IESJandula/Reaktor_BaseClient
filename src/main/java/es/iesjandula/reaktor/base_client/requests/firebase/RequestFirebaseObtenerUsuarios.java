@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import es.iesjandula.reaktor.base.security.models.DtoUsuarioBase;
+import es.iesjandula.reaktor.base.utils.BaseException;
 import es.iesjandula.reaktor.base.utils.HttpClientUtils;
 import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
 import es.iesjandula.reaktor.base_client.utils.BaseClientException;
@@ -44,7 +45,13 @@ public class RequestFirebaseObtenerUsuarios
     @Value("${reaktor.http_connection_timeout}")
     private int httpConnectionTimeout;
 
-    public List<DtoUsuarioBase> obtenerUsuarios() throws BaseClientException
+	/**
+	 * Obtiene los usuarios de Firebase
+	 * @return Lista de usuarios
+	 * @throws BaseException error al obtener el token personalizado
+	 * @throws BaseClientException error al obtener los usuarios
+	 */
+    public List<DtoUsuarioBase> obtenerUsuarios() throws BaseException, BaseClientException
     {
         // Lista de usuarios
         List<DtoUsuarioBase> usuarios = null ;

@@ -52,26 +52,22 @@ public class AuthorizationService
 	private PublicKeyGetter publicKeyGetter ;
 	
 	/**
-	 * Inicializa la instancia de JWT Parser
-	 * @throws BaseClientException con un error al leer la clave pública
-	 */
-	@PostConstruct
-	public void init() throws BaseException
-	{
-		this.jwtParser = Jwts.parser() 								 				 // Inicializa el parser (analizador) de JWT
-                			 .verifyWith(this.publicKeyGetter.obtenerClavePublica()) // Configura la clave pública para validar la firma del JWT
-                			 .build() ; 							 				 // Construye el objeto del parser configurado
-	}
-	
-	/**
 	 * Realiza una solicitud HTTP POST al otro microservicio para obtener un token personalizado
 	 *
 	 * @param timeout
 	 * @return El token JWT obtenido del microservicio
+	 * @throws BaseException error al obtener la clave pública
 	 * @throws BaseClientException error al obtener el token
 	 */
-	public String obtenerTokenPersonalizado(int timeout) throws BaseClientException
+	public String obtenerTokenPersonalizado(int timeout) throws BaseException, BaseClientException
 	{
+		if (this.jwtParser == null)
+		{
+			this.jwtParser = Jwts.parser() 								 				 // Inicializa el parser (analizador) de JWT
+								 .verifyWith(this.publicKeyGetter.obtenerClavePublica()) // Configura la clave pública para validar la firma del JWT
+								 .build() ; 							 				 // Construye el objeto del parser configurado
+		}
+
 	    // Verificamos si ya tenemos un token en "sesión"
 		String token = this.sessionStorageService.getToken() ;
 

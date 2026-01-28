@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import es.iesjandula.reaktor.base.utils.BaseException;
 import es.iesjandula.reaktor.base.utils.HttpClientUtils;
 import es.iesjandula.reaktor.base_client.dtos.NotificationWebDto;
 import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
@@ -42,9 +43,10 @@ public class RequestNotificacionesEnviarWeb
 	 * Método - Enviar notificación web
 	 * @param notificationWebDto - DTO de la notificación web
 	 * @return Integer identificador de la notificación web
+	 * @throws BaseException error al obtener el token personalizado
 	 * @throws BaseClientException con un error al enviar la notificación web
 	 */
-	public Integer enviarNotificacionWeb(NotificationWebDto notificationWebDto) throws BaseClientException
+	public Integer enviarNotificacionWeb(NotificationWebDto notificationWebDto) throws BaseException, BaseClientException
 	{
 		// Validamos los parámetros
 		this.validarParametros(notificationWebDto);
@@ -137,9 +139,10 @@ public class RequestNotificacionesEnviarWeb
 	 * Método - Enviar notificación web interno
 	 * @param notificationWebDto - DTO de la notificación web
 	 * @return Integer identificador de la notificación web
+	 * @throws BaseException error al obtener el token personalizado
 	 * @throws BaseClientException con un error al enviar la notificación web
 	 */
-	private Integer enviarNotificacionWebInternal(NotificationWebDto notificationWebDto) throws BaseClientException
+	private Integer enviarNotificacionWebInternal(NotificationWebDto notificationWebDto) throws BaseException, BaseClientException
 	{
 		// Creamos el HttpClient con timeout
 		CloseableHttpClient closeableHttpClient = null ;
@@ -254,9 +257,10 @@ public class RequestNotificacionesEnviarWeb
 	/**
 	 * Método - Eliminar notificación web
 	 * @param idNotificacion - Identificador de la notificación web
+	 * @throws BaseException error al obtener el token personalizado
 	 * @throws BaseClientException con un error al eliminar la notificación web
 	 */
-	public void eliminarNotificacionWeb(Integer idNotificacion) throws BaseClientException
+	public void eliminarNotificacionWeb(Integer idNotificacion) throws BaseException, BaseClientException
 	{
 		// Creamos el HttpClient con timeout
 		CloseableHttpClient closeableHttpClient = null ;

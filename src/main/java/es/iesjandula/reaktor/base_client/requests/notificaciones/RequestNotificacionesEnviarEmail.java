@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import es.iesjandula.reaktor.base.utils.BaseException;
 import es.iesjandula.reaktor.base.utils.HttpClientUtils;
 import es.iesjandula.reaktor.base_client.dtos.NotificationEmailDto;
 import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
@@ -44,9 +45,10 @@ public class RequestNotificacionesEnviarEmail
 	/**
 	 * Método - Enviar notificación email
 	 * @param notificationEmailDto - DTO de la notificación email
+	 * @throws BaseException error al obtener el token personalizado
 	 * @throws BaseClientException con un error al enviar el email
 	 */
-	public void enviarNotificacionEmail(NotificationEmailDto notificationEmailDto) throws BaseClientException
+	public void enviarNotificacionEmail(NotificationEmailDto notificationEmailDto) throws BaseException, BaseClientException
 	{	
 		// Validamos los parámetros
 		this.validarParametros(notificationEmailDto);
@@ -102,9 +104,10 @@ public class RequestNotificacionesEnviarEmail
 	/**
 	 * Método - Enviar notificación email interno
 	 * @param notificationEmailDto - DTO de la notificación email
+	 * @throws BaseException error al obtener el token personalizado
 	 * @throws BaseClientException con un error al enviar la notificación email
 	 */
-	private void enviarNotificacionEmailInternal(NotificationEmailDto notificationEmailDto) throws BaseClientException
+	private void enviarNotificacionEmailInternal(NotificationEmailDto notificationEmailDto) throws BaseException, BaseClientException
 	{
 		// Creamos el HttpClient con timeout
 		CloseableHttpClient closeableHttpClient = null ;

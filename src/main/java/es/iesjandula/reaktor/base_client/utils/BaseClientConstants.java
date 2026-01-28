@@ -36,6 +36,9 @@ public class BaseClientConstants
 	/** Error - Error al imprimir el PDF */
 	public static final int ERR_PRINTING_PDF 				         = 6 ;
 
+	/** Error - Error al obtener el curso académico seleccionado */
+	public static final int ERR_GETTING_CURSO_ACADEMICO_SELECTED     = 7 ;
+
 	/*********************************************************/
 	/****** Parámetros para envío de notificaciones **********/
 	/*********************************************************/
