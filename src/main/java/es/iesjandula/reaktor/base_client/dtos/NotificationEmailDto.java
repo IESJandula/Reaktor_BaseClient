@@ -26,7 +26,7 @@ public class NotificationEmailDto
     /** Constructor vacío */
     public NotificationEmailDto()
     {
-        // Vacío
+        // Constructor vacío
     }
 
     /** 
