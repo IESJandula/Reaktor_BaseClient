@@ -22,6 +22,9 @@ import es.iesjandula.reaktor.base_client.security.service.AuthorizationService;
 import es.iesjandula.reaktor.base_client.utils.BaseClientConstants;
 import es.iesjandula.reaktor.base_client.utils.BaseClientException;
 
+/**
+ * @author Francisco Manuel Benítez Chico
+ */
 @Component
 public class RequestNotificacionesEnviarWeb
 {
