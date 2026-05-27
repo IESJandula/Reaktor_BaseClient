@@ -31,7 +31,7 @@ public class NotificationWebDto
      */
     public NotificationWebDto()
     {
-        // Vacío
+        // Constructor vacío
     }
     
     /**
