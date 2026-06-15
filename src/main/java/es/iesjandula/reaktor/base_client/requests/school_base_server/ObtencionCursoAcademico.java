@@ -32,8 +32,8 @@ public class ObtencionCursoAcademico
 	@Autowired
 	private AuthorizationService authorizationService ;
 
-	@Value("${reaktor.school_base_server_url}")
-	private String schoolBaseServerUrl ;
+	@Value("${reaktor.school_manager_server_url}")
+	private String schoolManagerServerUrl ;
 	
 	@Value("${reaktor.http_connection_timeout}")
 	private int httpConnectionTimeout ;	
@@ -56,7 +56,7 @@ public class ObtencionCursoAcademico
 			closeableHttpClient = HttpClientUtils.crearHttpClientConTimeout(this.httpConnectionTimeout) ;
 
 			// Configuración del HTTP GET con codificación UTF-8
-			HttpGet httpGet = new HttpGet(this.schoolBaseServerUrl + "/school_base_server/curso_academico/") ;
+			HttpGet httpGet = new HttpGet(this.schoolManagerServerUrl + "/school_manager_server/curso_academico/") ;
 
 			// Añadimos el token a la llamada
 			httpGet.addHeader("Authorization", "Bearer " + this.authorizationService.obtenerTokenPersonalizado(this.httpConnectionTimeout)) ;
